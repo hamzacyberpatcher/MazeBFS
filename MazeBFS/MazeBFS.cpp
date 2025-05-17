@@ -9,7 +9,7 @@ const int WIDTH = 900;
 const int HEIGHT = 900;
 const int GRIDISZE = 50;
 
-void bfsMazeDraw(sf::RenderWindow& window, const std::vector<std::vector<int>>& maze, std::unordered_map<int, bool>& visited)
+void bfsMazeDraw(sf::RenderWindow& window, const std::vector<std::vector<int>>& maze, std::unordered_map<int, bool>& visited, int start, int end)
 {
     const int rows = maze.size();
     const int cols = maze[0].size();
@@ -24,18 +24,22 @@ void bfsMazeDraw(sf::RenderWindow& window, const std::vector<std::vector<int>>& 
             sf::RectangleShape rect(sf::Vector2f(GRIDISZE - 2, GRIDISZE - 2));
             rect.setPosition(sf::Vector2f(c * GRIDISZE + padding, r * GRIDISZE + padding));
 
-            // Colors
-            if (r == 0 && c == 0)
-                rect.setFillColor(sf::Color::Green);  // Start
-            else if (r == rows - 1 && c == cols - 1)
-                rect.setFillColor(sf::Color::Red);    // End
-            else
-                rect.setFillColor(maze[r][c] ? sf::Color(245, 245, 245) : sf::Color(30, 30, 30));
-
             int node = r * cols + c;
+
+            
+            
+            rect.setFillColor(maze[r][c] ? sf::Color(245, 245, 245) : sf::Color(30, 30, 30));
+
+            
 
             if (visited[node])
                 rect.setFillColor(sf::Color::Blue);
+
+            // Colors
+            if (node == start)
+                rect.setFillColor(sf::Color::Green);  // Start
+            else if (node == end)
+                rect.setFillColor(sf::Color::Red);    // End
 
             // Outline for visual grid
             rect.setOutlineThickness(1);
@@ -94,7 +98,7 @@ public:
                     visited[neighbour] = true;
                     parent[neighbour] = node;
                     q.push(neighbour);
-                    bfsMazeDraw(window, maze, visited);
+                    bfsMazeDraw(window, maze, visited, start, end);
                 }
             }
         }
@@ -145,7 +149,7 @@ void mazeToGraph(std::vector<std::vector<int>>& maze, Graph& g)
     }
 }
 
-void drawMazeInitial(sf::RenderWindow& window, const std::vector<std::vector<int>>& maze)
+void drawMazeInitial(sf::RenderWindow& window, const std::vector<std::vector<int>>& maze, int start, int end)
 {
     const int rows = maze.size();
     const int cols = maze[0].size();
@@ -158,10 +162,12 @@ void drawMazeInitial(sf::RenderWindow& window, const std::vector<std::vector<int
             sf::RectangleShape rect(sf::Vector2f(GRIDISZE - 2, GRIDISZE - 2));
             rect.setPosition(sf::Vector2f(c * GRIDISZE + padding, r * GRIDISZE + padding));
 
+            int node = r * cols + c;
+
             // Colors
-            if (r == 0 && c == 0)
+            if (node == start)
                 rect.setFillColor(sf::Color::Green);  // Start
-            else if (r == rows - 1 && c == cols - 1)
+            else if (node == end)
                 rect.setFillColor(sf::Color::Red);    // End
             else
                 rect.setFillColor(maze[r][c] ? sf::Color(245, 245, 245) : sf::Color(30, 30, 30));
@@ -260,6 +266,9 @@ int main()
     sf::RenderWindow window(sf::VideoMode(WIDTH + 200, HEIGHT + 200), "BFS MAZE SOLVER");
     window.setFramerateLimit(30);
 
+    int start = cols - 1;
+    int end = rows * cols - 13;
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -272,13 +281,13 @@ int main()
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !started)
         {
-            path = g.bfs(window, maze, 0, rows * cols - 1, rows, cols, visited);
+            path = g.bfs(window, maze, start, end, rows, cols, visited);
             started = true;
         }
 
         window.clear();
         if (!started)
-            drawMazeInitial(window, maze);
+            drawMazeInitial(window, maze, start, end);
         else
             drawMazeFinal(window, maze, path, visited);
         window.display();
