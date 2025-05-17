@@ -258,7 +258,7 @@ int main()
     bool started = false;
     
     sf::RenderWindow window(sf::VideoMode(WIDTH + 200, HEIGHT + 200), "BFS MAZE SOLVER");
-    window.setFramerateLimit(15);
+    window.setFramerateLimit(30);
 
     while (window.isOpen())
     {
