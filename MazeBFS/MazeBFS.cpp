@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <queue>
 #include <algorithm>
+#include <SFML/Graphics.hpp>
+
 class Graph
 {
     std::unordered_map<int, std::vector<int>> adjList;
@@ -136,7 +138,22 @@ int main()
     pathCoords = g.bfs(0, rows * cols - 1, rows, cols, visited);
 
     
+    sf::RenderWindow window(sf::VideoMode(1600, 900), "BFS MAZE SOLVER");
 
+    while (window.isOpen())
+    {
+        sf::Event event;
+
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+
+        window.display();
+    }
     
 
 
